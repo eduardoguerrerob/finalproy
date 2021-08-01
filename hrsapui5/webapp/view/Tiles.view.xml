@@ -1,0 +1,28 @@
+<mvc:View controllerName="egb.hrsapui5.controller.Tiles"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <Page id="tilesView" title="{i18n>tiles}">
+        <content>
+            <Panel headerText="{i18n>empleados}" expandable="true" expanded="true">
+                <GenericTile headerImage="sap-icon://add-employee" press="goToCreateEmployee"
+                    class="sapUiSmallMargin">
+                    <TileContent footer="{i18n>crearEmpleado}">
+                    </TileContent>
+                </GenericTile>
+                <GenericTile headerImage="sap-icon://employee-lookup" press="goToShowEmployee"
+                    class="sapUiSmallMargin">
+                    <TileContent footer="{i18n>verEmpleado}">
+                    </TileContent>
+                </GenericTile>
+            </Panel>
+            <Panel headerText="{i18n>pedidos}" expandable="true" expanded="true">
+                <GenericTile id="linkFirmarPedido" headerImage="sap-icon://signature" 
+                    url="https://36eb5a1etrial-dev-proy-emp-approuter.cfapps.eu10.hana.ondemand.com"
+                    class="sapUiSmallMargin">
+                     <TileContent footer="{i18n>firmarPedido}">
+                    </TileContent>
+                </GenericTile>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>
