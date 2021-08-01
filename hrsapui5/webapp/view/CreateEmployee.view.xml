@@ -44,7 +44,7 @@
                                         <Label text="{i18n>apellido}" required="true"/>
                                         <Input value="{/LastName}" valueState="{/LastNameState}" change="changeDataEmployee"/>
                                         <Label text="{= ${/_type} === 'autonomo' ? ${i18n>cif} : ${i18n>dni}}" required="true"/>
-                                        <Input value="{/Dni}" valueState="{/_DniState}" change="changeDni"/>
+                                        <Input value="{/Dni}" valueState="{/_DniState}" change="changeDataEmployee"/>
                                         <Label text="{= ${/_type} === 'autonomo' ? ${i18n>precioDia} : ${i18n>salarioAnual}}"/>
                                         <VBox >
                                             <Slider value="{/_salary}" min="12000" max="80000" step="1000" inputsAsTooltips="true" showAdvancedTooltip="true" enableTickmarks="true" width="100%" class="sapUiSmallMarginBottom" progress="false" visible="{= ${/_type} === 'interno'}">
@@ -53,17 +53,31 @@
                                             <Slider value="{/_salary}" min="100" max="2000" step="100" inputsAsTooltips="true" showAdvancedTooltip="true" enableTickmarks="true" width="100%" class="sapUiSmallMarginBottom" progress="false" visible="{= ${/_type} === 'autonomo'}">
                                                 <ResponsiveScale tickmarksBetweenLabels="100"/>
                                             </Slider>
-                                             <Slider value="{/_salary}" min="5000" max="200000" step="100" inputsAsTooltips="true" showAdvancedTooltip="true" enableTickmarks="true" width="100%" class="sapUiSmallMarginBottom" progress="false" visible="{= ${/_type} === 'gerente'}">
+                                            <Slider value="{/_salary}" min="5000" max="200000" step="100" inputsAsTooltips="true" showAdvancedTooltip="true" enableTickmarks="true" width="100%" class="sapUiSmallMarginBottom" progress="false" visible="{= ${/_type} === 'gerente'}">
                                                 <ResponsiveScale tickmarksBetweenLabels="100"/>
                                             </Slider>
                                         </VBox>
                                         <Label text="{i18n>fechaIngreso}" required="true"/>
-                                        <DatePicker dateValue="{/CreationDate}" valueState="{/_CreationDateState}"
-                                              change="changeDataEmployee"/>
+                                        <DatePicker dateValue="{/CreationDate}" valueState="{/_CreationDateState}" change="changeDataEmployee"/>
                                     </form:SimpleForm>
                                 </WizardStep>
 
-                                
+                                <WizardStep id="wizardStep3" title="{i18n>step3}" validated="false" activate="optionarStepActivation">
+                                    <MessageStrip text="{i18n>step3mensaje}" showIcon="true" class="sapUiSmallMarginBottom"/>
+                                    <Label text="{i18n>comentario}"/>
+                                    <TextArea value="{/Comments}" width="100%"/>
+                                    <UploadCollection id="uploadCollection"
+                                                    maximumFilenameLength="55"
+                                                    maximumFileSize="10"
+                                                    multiple="true"
+                                                    uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
+                                                    sameFilenameAllowed="true"
+                                                    instantUpload="false"
+                                                    change="onChangeUploadCollection"
+                                                    beforeUploadStarts="onBeforeUploadStarts"
+                                                    noDataDescription="{18nn>arrastrarArchivos}"/>
+                                </WizardStep>
+
                             </Wizard>
                         </content>
                     </Page>
