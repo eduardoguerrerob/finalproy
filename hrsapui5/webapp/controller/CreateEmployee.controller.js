@@ -1,3 +1,4 @@
+// @ts-nocheck
 sap.ui.define([
     "sap/ui/core/mvc/Controller"
 ],
@@ -149,7 +150,7 @@ sap.ui.define([
                         //this.changeDataEmployee();
                     }
                 } else {
-                     dniOk = false;
+                    dniOk = false;
                     this._model.setProperty("/_DniState", "Error");
                 }
             }
@@ -159,7 +160,33 @@ sap.ui.define([
 
         function onChangeUploadCollection(oEvent) {
             let oUploadCollection = oEvent.getSource();
-            let oToken = new sap.m.UploadCollectionParameter();
+            let oToken = new sap.m.UploadCollectionParameter({
+                name: "x-csrf-token",
+                value: this.getView().getModel("odataModel").getSecurityToken()
+            });
+            oUploadCollection.addHeaderParameter(oToken);
+        }
+
+        function onBeforeUploadStarts(oEvent) {
+            let oSlug = new UploadCollectionParameter({
+				name: "slug",
+				value: this.getOwnerComponent().SapId+";"+this.EmployeeId+";"+oEvent.getParameter("fileName")
+			});
+			oEvent.getParameters().addHeaderParameter(oSlug);
+        }
+
+        function wizardCompletedHandler(oEvent) {
+            this.changeDataEmployee(oEvent, function(isOk){
+                if(isOk){
+                    
+                }
+            }.bind(this));
+
+
+            let $navContainer = this.getView().byId("wizardNavContainer");
+            $navContainer.to(this.getView().byId("review"));
+
+
         }
 
         ////////////////////////////////////////////
@@ -171,7 +198,8 @@ sap.ui.define([
         CreateEmployee.prototype.goToStep2 = goToStep2;
         CreateEmployee.prototype.changeDataEmployee = changeDataEmployee;
         CreateEmployee.prototype.validationDni = validationDni;
-        CreateEmployee.prototype.onChangeUploadCollection=onChangeUploadCollection;
+        CreateEmployee.prototype.onChangeUploadCollection = onChangeUploadCollection;
+        CreateEmployee.prototype.wizardCompletedHandler=wizardCompletedHandler;
 
         return CreateEmployee;
 

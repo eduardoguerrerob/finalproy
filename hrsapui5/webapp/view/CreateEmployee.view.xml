@@ -6,11 +6,11 @@
 
     <Page title="{i18n>crearEmpleado}">
         <content>
-            <NavContainer id="navContainer">
+            <NavContainer id="wizardNavContainer">
                 <pages>
                     <Page showHeader="false">
                         <content>
-                            <Wizard id="wizard" complete="wizardComplete">
+                            <Wizard id="wizard" complete="wizardCompletedHandler" finishButtonText="{i18n>resumenBtn}">
                                 <WizardStep id="wizardStep1" title="{i18n>step1}" validated="false">
                                     <MessageStrip text="{i18n>step1mensaje}" showIcon="true">
                                     </MessageStrip>
@@ -62,24 +62,25 @@
                                     </form:SimpleForm>
                                 </WizardStep>
 
-                                <WizardStep id="wizardStep3" title="{i18n>step3}" validated="false" activate="optionarStepActivation">
+                                <WizardStep id="wizardStep3" title="{i18n>step3}" validated="true" activate="optionarStepActivation">
                                     <MessageStrip text="{i18n>step3mensaje}" showIcon="true" class="sapUiSmallMarginBottom"/>
                                     <Label text="{i18n>comentario}"/>
                                     <TextArea value="{/Comments}" width="100%"/>
-                                    <UploadCollection id="uploadCollection"
-                                                    maximumFilenameLength="55"
-                                                    maximumFileSize="10"
-                                                    multiple="true"
-                                                    uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
-                                                    sameFilenameAllowed="true"
-                                                    instantUpload="false"
-                                                    change="onChangeUploadCollection"
-                                                    beforeUploadStarts="onBeforeUploadStarts"
-                                                    noDataDescription="{18nn>arrastrarArchivos}"/>
+                                    <UploadCollection id="uploadCollection" maximumFilenameLength="55" maximumFileSize="10" multiple="true" uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments" sameFilenameAllowed="true" instantUpload="false" change="onChangeUploadCollection" beforeUploadStarts="onBeforeUploadStarts" noDataDescription="{18nn>arrastrarArchivos}"/>
                                 </WizardStep>
 
                             </Wizard>
                         </content>
+                        <footer>
+                            <OverflowToolbar >
+                                <ToolbarSpacer/>
+                                <Button text="{i18n>cancelar}" press="onCancel"/>
+                            </OverflowToolbar>
+                        </footer>
+                    </Page>
+
+                    <Page id="review" title="{i18n>resumen}">
+                        <core:Fragment fragmentName="egb.hrsapui5.fragment.Review" type="XML"/>
                     </Page>
                 </pages>
             </NavContainer>
