@@ -169,24 +169,68 @@ sap.ui.define([
 
         function onBeforeUploadStarts(oEvent) {
             let oSlug = new UploadCollectionParameter({
-				name: "slug",
-				value: this.getOwnerComponent().SapId+";"+this.EmployeeId+";"+oEvent.getParameter("fileName")
-			});
-			oEvent.getParameters().addHeaderParameter(oSlug);
+                name: "slug",
+                value: this.getOwnerComponent().SapId + ";" + this.EmployeeId + ";" + oEvent.getParameter("fileName")
+            });
+            oEvent.getParameters().addHeaderParameter(oSlug);
         }
 
         function wizardCompletedHandler(oEvent) {
-            this.changeDataEmployee(oEvent, function(isOk){
-                if(isOk){
-                    
+            this.changeDataEmployee(oEvent, function (isOk) {
+                if (isOk) {
+                    let $navContainer = this.getView().byId("wizardNavContainer");
+                    $navContainer.to(this.getView().byId("review"));
+                    let $uploadCollection = this.getView().byId("uploadCollection");
+                    const files = $uploadCollection.getItems();
+                    const numFiles = files.length;
+                    this._model.setProperty("/_numFiles");
+
+                    if (numFiles > 0) {
+                        let aFiles = [];
+                        for (var idx in files) {
+                            var objFile = {
+                                fileName: files[idx].getFileName(),
+                                type: files[idx].getMimeType()
+                            }
+                            aFiles.push(objFile);
+                        }
+                        this._model.setProperty("/_files", aFiles);
+                    }
+                    else {
+                        this._model.setProperty("/_files", []);
+                    }
+                }
+                else {
+                    this._wizard.goToStep(this.getView().byId("wizardStep2"));
                 }
             }.bind(this));
 
+        }
 
-            let $navContainer = this.getView().byId("wizardNavContainer");
-            $navContainer.to(this.getView().byId("review"));
+        function _editStep(step) {
+            var wizardNavContainer = this.byId("wizardNavContainer");
+            //Se añade un función al evento afterNavigate, ya que se necesita 
+            //que la función se ejecute una vez ya se haya navegado a la vista principal
+            var fnAfterNavigate = function () {
+                this._wizard.goToStep(this.byId(step));
+                //Se quita la función para que no vuelva a ejecutar al volver a nevagar
+                wizardNavContainer.detachAfterNavigate(fnAfterNavigate);
+            }.bind(this);
 
+            wizardNavContainer.attachAfterNavigate(fnAfterNavigate);
+            wizardNavContainer.back();
+        }
 
+        function editStep1(oEvent) {
+            _editStep.bind(this)("wizardStep1");
+        }
+
+        function editStep2(oEvent) {
+            _editStep.bind(this)("wizardStep2");
+        }
+
+        function editStep3(oEvent) {
+            _editStep.bind(this)("wizardStep3");
         }
 
         ////////////////////////////////////////////
@@ -199,7 +243,10 @@ sap.ui.define([
         CreateEmployee.prototype.changeDataEmployee = changeDataEmployee;
         CreateEmployee.prototype.validationDni = validationDni;
         CreateEmployee.prototype.onChangeUploadCollection = onChangeUploadCollection;
-        CreateEmployee.prototype.wizardCompletedHandler=wizardCompletedHandler;
+        CreateEmployee.prototype.wizardCompletedHandler = wizardCompletedHandler;
+        CreateEmployee.prototype.editStep1 = editStep1;
+        CreateEmployee.prototype.editStep2 = editStep2;
+        CreateEmployee.prototype.editStep3 = editStep3;
 
         return CreateEmployee;
 

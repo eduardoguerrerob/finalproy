@@ -1,18 +1,15 @@
-<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"  xmlns:form="sap.ui.layout.form">
-    <form:SimpleForm title="1. {i18n>step1}"
-                     minWidth="1024"
-                     editable="false"
-                     layout="ResponsiveGridLayout">
+<core:FragmentDefinition xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form">
+    <form:SimpleForm title="1. {i18n>step1}" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
         <form:content>
             <Label text="{i18n>tipo}"/>
             <Text text="{=${/_type} === 'interno' ? ${i18n>interno} : ${/_type} === 'autonomo' ? ${i18n>autonomo} : ${i18n>gerente}}"/>
             <Link press="editStep1" text="{i18n>editarPaso}" />
         </form:content>
     </form:SimpleForm>
-    <form:SimpleForm title="2. {i18n>step2}"
-                    minWidth="1024"
-                    editable="false"
-                    layout="ResponsiveGridLayout">
+    <form:SimpleForm title="2. {i18n>step2}" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
         <form:content>
             <Label text="{i18n>nombre}"/>
             <Text text="{/FirstName}"/>
@@ -27,18 +24,20 @@
                 path: '/CreationDate',
                 type: 'sap.ui.model.type.Date'
             }"/>
-             <Link press="editStep2" text="{i18n>editarPaso}" />
+            <Link press="editStep2" text="{i18n>editarPaso}" />
         </form:content>
     </form:SimpleForm>
-    <form:SimpleForm title="3. {i18n>step3}" 
-           minWidth="1024"
-           editable="false"
-           layout="ResponsiveGridLayout">
+    <form:SimpleForm title="3. {i18n>step3}" minWidth="1024" editable="false" layout="ResponsiveGridLayout">
         <form:content>
             <Label text="{i18n>comentario}"/>
             <Text text="{/Comments}"/>
             <Label text="{i18n>archivos}"/>
-
+            <List items="{/_files}">
+                <items>
+                    <StandardListItem title="{fileName}"/>
+                </items>
+            </List>
+            <Link press="editStep3" text="{i18n>editarPaso}" />
         </form:content>
     </form:SimpleForm>
 
