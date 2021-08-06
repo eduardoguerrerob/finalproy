@@ -81,6 +81,13 @@
 
                     <Page id="review" title="{i18n>resumen}">
                         <core:Fragment fragmentName="egb.hrsapui5.fragment.Review" type="XML"/>
+                        <footer>
+                            <Toolbar >
+                                <ToolbarSpacer />
+                                <Button text="{i18n>guardar}" press="onSave"/>
+                                <Button text="{i18n>cancelar}" press="onCancel"/>
+                            </Toolbar>
+                        </footer>
                     </Page>
                 </pages>
             </NavContainer>

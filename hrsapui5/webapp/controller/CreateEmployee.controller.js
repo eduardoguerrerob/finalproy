@@ -1,11 +1,13 @@
 // @ts-nocheck
 sap.ui.define([
-    "sap/ui/core/mvc/Controller"
+    "sap/ui/core/mvc/Controller",
+    "sap/m/MessageBox"
 ],
 	/**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
+     * @param {typeof sap.m.MessageBox} MessageBox
      */
-    function (Controller) {
+    function (Controller, MessageBox) {
         "use strict";
 
         function onInit() {
@@ -233,6 +235,65 @@ sap.ui.define([
             _editStep.bind(this)("wizardStep3");
         }
 
+        function onSave(oEvent) {
+            let objData = this.getView().getModel().getData();
+
+            let body = {};
+            /*
+            for(var property in objData){
+                if(property.indexOf("_") !== 0){
+                    body[property] = objData[property];
+                }
+            }*/
+            body.SapId = this.getOwnerComponent().SapId;
+            body.FirstName = objData.FirstName;
+            body.LastName = objData.LastName;
+            body.Dni = objData.Dni;
+            body.CreationDate = objData.CreationDate;
+            body.UserToSalary = [{
+                Ammount: parseFloat(objData._salary).toString(),
+                Comments: objData.Comments,
+                Waers: "EUR"
+            }];
+
+            let odataModel = this.getView().getModel("odataModel");
+
+            //this.getView().setBusy(true);
+
+            odataModel.create("/Users", body, {
+                success: function (data) {
+                    this.getView().setBusy(false);
+                    this.newEmployee = data.EmployeeId;
+
+                    let i18nModel = this.getView().getModel("i18n").getResourceBundle();
+                    MessageBox.information(i18nModel.getText("usuarioCreado") + " " + this.newEmployee, {
+                        onClose: function () {
+                            let $wizardNavContainer = this.byId("wizardNavContainer");
+                            $wizardNavContainer.back();
+                            let oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                            oRouter.navTo("RouteTiles", {}, true);
+                        }.bind(this)
+                    });
+                }.bind(this),
+                error: function () {
+                    this.getView().setBusy(false);
+                }.bind(this)
+            });
+        }
+
+        function onCancel(oEvent) {
+            let i18nModel = this.getView().getModel("i18n").getResourceBundle();
+            MessageBox.confirm(i18nModel.getText("confirmarCancelacion"), {
+                onClose: function (res) {
+                    if (res === "OK") {
+                        let oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                        oRouter.navTo("RouteTiles", {}, true);
+                    }
+                }.bind(this)
+            })
+
+        }
+
         ////////////////////////////////////////////
 
         const CreateEmployee = Controller.extend("egb.hrsapui5.controller.CreateEmployee", {});
@@ -247,6 +308,8 @@ sap.ui.define([
         CreateEmployee.prototype.editStep1 = editStep1;
         CreateEmployee.prototype.editStep2 = editStep2;
         CreateEmployee.prototype.editStep3 = editStep3;
+        CreateEmployee.prototype.onSave = onSave;
+        CreateEmployee.prototype.onCancel = onCancel;
 
         return CreateEmployee;
 
