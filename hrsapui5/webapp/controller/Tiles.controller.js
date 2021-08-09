@@ -26,12 +26,17 @@ sap.ui.define([
             oRouter.navTo("RouteCreateEmployee", {}, false);
         }
 
+        function goToShowEmployee() {
+            const oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+            oRouter.navTo("RouteShowEmployee", {}, false);
+        }
 
         const Tiles = Controller.extend("egb.hrsapui5.controller.Tiles", {});
 
-        Tiles.prototype.onInit=onInit;
-        Tiles.prototype.onAfterRendering=onAfterRendering;
-        Tiles.prototype.goToCreateEmployee=goToCreateEmployee;
+        Tiles.prototype.onInit = onInit;
+        Tiles.prototype.onAfterRendering = onAfterRendering;
+        Tiles.prototype.goToCreateEmployee = goToCreateEmployee;
+        Tiles.prototype.goToShowEmployee = goToShowEmployee;
 
         return Tiles;
 

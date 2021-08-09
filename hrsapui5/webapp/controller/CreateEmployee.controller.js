@@ -1,13 +1,15 @@
 // @ts-nocheck
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/m/MessageBox"
+    "sap/m/MessageBox",
+    "sap/m/UploadCollectionParameter"
 ],
 	/**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      * @param {typeof sap.m.MessageBox} MessageBox
+     * @param {typeof sap.m.UploadCollectionParameter} UploadCollectionParameter
      */
-    function (Controller, MessageBox) {
+    function (Controller, MessageBox, UploadCollectionParameter) {
         "use strict";
 
         function onInit() {
@@ -54,7 +56,7 @@ sap.ui.define([
 
             this._model.setData({
                 _type: employeeType,
-                _type012: type,
+                Type: type,
                 _salary: salary
             });
 
@@ -161,8 +163,8 @@ sap.ui.define([
 
 
         function onChangeUploadCollection(oEvent) {
-            let oUploadCollection = oEvent.getSource();
-            let oToken = new sap.m.UploadCollectionParameter({
+            var oUploadCollection = oEvent.getSource();
+            var oToken = new sap.m.UploadCollectionParameter({
                 name: "x-csrf-token",
                 value: this.getView().getModel("odataModel").getSecurityToken()
             });
@@ -170,9 +172,9 @@ sap.ui.define([
         }
 
         function onBeforeUploadStarts(oEvent) {
-            let oSlug = new UploadCollectionParameter({
+            var oSlug = new UploadCollectionParameter({
                 name: "slug",
-                value: this.getOwnerComponent().SapId + ";" + this.EmployeeId + ";" + oEvent.getParameter("fileName")
+                value: this.getOwnerComponent().SapId+";"+this.newEmployee+";"+oEvent.getParameter("fileName")
             });
             oEvent.getParameters().addHeaderParameter(oSlug);
         }
@@ -250,6 +252,8 @@ sap.ui.define([
             body.LastName = objData.LastName;
             body.Dni = objData.Dni;
             body.CreationDate = objData.CreationDate;
+            body.Type = objData.Type;
+            body.Comments = objData.Comments;
             body.UserToSalary = [{
                 Ammount: parseFloat(objData._salary).toString(),
                 Comments: objData.Comments,
@@ -274,6 +278,9 @@ sap.ui.define([
                             oRouter.navTo("RouteTiles", {}, true);
                         }.bind(this)
                     });
+                    // upload files
+                    let $uploadCollection = this.byId("uploadCollection");
+                    $uploadCollection.upload();
                 }.bind(this),
                 error: function () {
                     this.getView().setBusy(false);
@@ -304,6 +311,7 @@ sap.ui.define([
         CreateEmployee.prototype.changeDataEmployee = changeDataEmployee;
         CreateEmployee.prototype.validationDni = validationDni;
         CreateEmployee.prototype.onChangeUploadCollection = onChangeUploadCollection;
+        CreateEmployee.prototype.onBeforeUploadStarts=onBeforeUploadStarts;
         CreateEmployee.prototype.wizardCompletedHandler = wizardCompletedHandler;
         CreateEmployee.prototype.editStep1 = editStep1;
         CreateEmployee.prototype.editStep2 = editStep2;
