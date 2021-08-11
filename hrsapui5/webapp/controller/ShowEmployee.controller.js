@@ -2,14 +2,16 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/m/UploadCollectionParameter",
-    "sap/m/MessageBox"
+    "sap/m/MessageBox",
+    "sap/m/MessageToast"
 ],
 	/**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      * @param {typeof sap.m.UploadCollectionParameter} UploadCollectionParameter
      * @param {typeof sap.m.MessageBox} MessageBox
+     * @param {typeof sap.m.MessageToast} MessageToast
      */
-    function (Controller, UploadCollectionParameter, MessageBox) {
+    function (Controller, UploadCollectionParameter, MessageBox, MessageToast) {
 
         function onInit() {
             this._splitApp = this.getView().byId("splitApp");
@@ -68,8 +70,63 @@ sap.ui.define([
             });
         }
 
-        function onDeleteEmployee(oEvent){
-            MessageBox.confirm();
+        function onDeleteEmployee(oEvent) {
+            const oResourceBoundle = this.getView().getModel("i18n").getResourceBundle();
+            MessageBox.confirm(oResourceBoundle.getText("confirmarBorrado"), {
+                onClose: function (oAction) {
+                    if (oAction === 'OK') {
+                        let path = "/Users(EmployeeId='" + this.employeeId + "',SapId='" + this.getOwnerComponent().SapId + "')";
+                        this.getView().getModel("odataModel").remove(path, {
+                            success: function () {
+                                MessageToast.show(oResourceBoundle.getText("empleadoBorrado"));
+                                this._splitApp.to(this.createId("startPage"));
+                            }.bind(this),
+                            error: function (e) {
+                                sap.base.Log.info(e);
+                            }
+                        })
+                    }
+                }.bind(this)
+            });
+        }
+
+        function onRiseEmployee(oEvent) {
+            if (!this.riseDialog) {
+                this.riseDialog = sap.ui.xmlfragment("egb.hrsapui5.fragment.RiseEmployee", this);
+                this.getView().addDependent(this.riseDialog);
+            }
+            let riseModel = new sap.ui.model.json.JSONModel({});
+            this.riseDialog.setModel(riseModel, "riseModel");
+            this.riseDialog.open()
+        }
+
+        function onAcceptRise(oEvent) {
+            let riseModel = this.riseDialog.getModel("riseModel");
+            let objData = riseModel.getData();
+            let body = {
+                SapId: this.getOwnerComponent().SapId,
+                EmployeeId: this.employeeId,
+                Ammount: objData.Ammount,
+                CreationDate: objData.CreationDate,
+                Comments: objData.Comments
+            };
+            this.getView().setBusy(true);
+            let odataModel = this.getView().getModel("odataModel");
+            odataModel.create("/Salaries", body, {
+                success: function () {
+                    this.getView().setBusy(false);
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("ascensoOk"));
+                    this.onCloseRiseDialog();
+                }.bind(this),
+                error: function () {
+                    this.getView().setBusy(false);
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("ascensoKo"));
+                }.bind(this)
+            });
+        }
+
+        function onCloseRiseDialog(){
+            this.riseDialog.close();
         }
 
         ///////////////////////////////////////////////
@@ -84,4 +141,8 @@ sap.ui.define([
         ShowEmployee.prototype.onBeforeUploadStarts = onBeforeUploadStarts;
         ShowEmployee.prototype.onUploadComplete = onUploadComplete;
         ShowEmployee.prototype.onFileDeleted = onFileDeleted;
+        ShowEmployee.prototype.onDeleteEmployee = onDeleteEmployee;
+        ShowEmployee.prototype.onRiseEmployee = onRiseEmployee;
+        ShowEmployee.prototype.onAcceptRise = onAcceptRise;
+        ShowEmployee.prototype.onCloseRiseDialog = onCloseRiseDialog;
     });
